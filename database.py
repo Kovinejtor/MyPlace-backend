@@ -1,5 +1,3 @@
-# backend/database.py
-
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
@@ -7,7 +5,6 @@ from sqlalchemy.orm import sessionmaker, Session
 from dotenv import load_dotenv
 import os
 
-# Load environment variables from .env file
 load_dotenv()
 
 DATABASE_URI = os.getenv("DATABASE_URI")
@@ -36,10 +33,8 @@ class Register(Base):
     country = Column(String)
     phoneNumber = Column(String)
 
-# Create the table
 Base.metadata.create_all(bind=engine)
 
-# Function to get the database session
 def get_db():
     db = SessionLocal()
     try:
