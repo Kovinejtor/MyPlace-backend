@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from dotenv import load_dotenv
 import os
@@ -32,6 +33,26 @@ class Register(Base):
     lastName = Column(String)
     country = Column(String)
     phoneNumber = Column(String)
+
+class Place(Base):
+    __tablename__ = "place"
+
+    id = Column(Integer, primary_key=True, index=True)
+    type = Column(String)
+    name = Column(String)
+    country = Column(String)
+    city = Column(String)
+    adress = Column(String)
+    maxPeople = Column(Integer)
+    beds = Column(Integer)
+    adults = Column(Integer)
+    children = Column(Integer)
+    animals = Column(String)
+    parking = Column(String)
+    minNight = Column(Integer)
+    price = Column(String)
+    description = Column(String)
+    images = Column(ARRAY(String))
 
 Base.metadata.create_all(bind=engine)
 

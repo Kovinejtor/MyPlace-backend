@@ -1,9 +1,10 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from typing import List
 
-from database import get_db, Register, Book
-from models import BookCreate, BookResponse, registerCreate, registerResponse
+from database import get_db, Register, Book, Place
+from models import BookCreate, BookResponse, registerCreate, registerResponse, placeCreate, placeResponse
 
 app = FastAPI()
 
@@ -38,6 +39,42 @@ async def login(email: str, password: str, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
+@app.post("/addPlace/", response_model=placeResponse)
+async def create_place(
+    place: placeCreate, 
+    files: List[UploadFile] = File(...), 
+    db: Session = Depends(get_db)
+):
+    try:
+        print("Received Place data:", place.dict())
+        print("Received Files:", files)
+
+        # Save place details to the database
+        db_place = Place(**place.dict())
+        db.add(db_place)
+        db.commit()
+        db.refresh(db_place)
+
+        # Save image URLs to the database
+        image_urls = []
+        for file in files:
+            # Process and save the file, and get its URL
+            # For simplicity, you can store the URLs directly. In production, consider using a dedicated storage service.
+            image_url = f"/path/to/your/image/{file.filename}"
+            image_urls.append(image_url)
+
+        db_place.images = image_urls
+        db.commit()
+        db.refresh(db_place)
+
+        return db_place
+    except Exception as e:
+        print("Error:", e)
+        # Log the error details to a file or another logging mechanism
+        with open('error.log', 'a') as log_file:
+            log_file.write(str(e) + '\n')
+        raise HTTPException(status_code=422, detail=str(e))
+
 @app.post("/books/", response_model=BookResponse)
 async def create_book(book: BookCreate, db: Session = Depends(get_db)):
     db_book = Book(**book.dict())

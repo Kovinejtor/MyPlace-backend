@@ -1,6 +1,5 @@
-# models.py
-
 from pydantic import BaseModel
+from typing import List
 
 class BookCreate(BaseModel):
     name: str
@@ -30,3 +29,37 @@ class registerResponse(BaseModel):
     lastName: str
     country: str
     phoneNumber: str
+
+class placeCreate(BaseModel):
+    type: str
+    name: str
+    country: str
+    city: str
+    adress: str
+    maxPeople: int
+    beds: int
+    adults: int
+    children: int
+    animals: str
+    parking: str
+    minNight: int
+    price: str
+    description: str
+    images: List[str] = []
+
+class placeResponse(BaseModel):
+    id: int
+    type: str
+    name: str
+    country: str
+    city: str
+    adress: str
+    maxPeople: int
+    beds: int
+    adults: int
+    children: int
+    animals: str
+    parking: str
+    minNight: int
+    price: str
+    description: str
