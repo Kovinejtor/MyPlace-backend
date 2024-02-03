@@ -45,7 +45,7 @@ class placeCreate(BaseModel):
     minNight: int
     price: str
     description: str
-    images: List[str] = []
+    folder: str
 
 class placeResponse(BaseModel):
     id: int
@@ -63,3 +63,4 @@ class placeResponse(BaseModel):
     minNight: int
     price: str
     description: str
+    folder: str
