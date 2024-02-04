@@ -53,6 +53,7 @@ class Place(Base):
     price = Column(String)
     description = Column(String)
     folder = Column(String)
+    dates = Column(String)
 
 Base.metadata.create_all(bind=engine)
 

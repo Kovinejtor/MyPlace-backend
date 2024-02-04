@@ -46,6 +46,7 @@ class placeCreate(BaseModel):
     price: str
     description: str
     folder: str
+    dates: str
 
 class placeResponse(BaseModel):
     id: int
@@ -64,3 +65,4 @@ class placeResponse(BaseModel):
     price: str
     description: str
     folder: str
+    dates: str
