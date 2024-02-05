@@ -54,6 +54,7 @@ class Place(Base):
     description = Column(String)
     folder = Column(String)
     dates = Column(String)
+    authorEmail = Column(String)
 
 Base.metadata.create_all(bind=engine)
 
