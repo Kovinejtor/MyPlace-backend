@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
+from sqlalchemy import func
 
 from database import get_db, Register, Book, Place
 from models import BookCreate, BookResponse, registerCreate, registerResponse, placeCreate, placeResponse
@@ -46,7 +47,6 @@ app.add_middleware(
 
 @app.post("/register/", response_model=dict)
 async def create_user(register: registerCreate, db: Session = Depends(get_db)):
-    # Hash the password before storing it
     hashed_password = bcrypt.hash(register.password)
 
     db_register = Register(
@@ -114,3 +114,40 @@ async def create_book(book: BookCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_book)
     return db_book
+
+
+@app.get("/user-info/{email}", response_model=registerResponse)
+async def get_user_info(email: str, db: Session = Depends(get_db)):
+    user = db.query(Register).filter(Register.email == email).first()
+    if user:
+        return user
+    else:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+@app.delete("/delete-account/", response_model=dict)
+async def delete_account(current_user: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    user = db.query(Register).filter(Register.email == current_user).first()
+    
+    if user:
+        db.delete(user)
+        db.commit()
+
+        db.query(Place).filter(Place.authorEmail == current_user).delete()
+        db.commit()
+
+        return {"message": "User and associated places deleted successfully"}
+    else:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+@app.get("/count-places/", response_model=dict)
+async def count_places(user_email: str, db: Session = Depends(get_db)):
+    count = db.query(func.count(Place.id)).filter(Place.authorEmail == user_email).scalar()
+    return {"count": count}
+
+@app.get("/places/", response_model=List[placeResponse])
+async def get_places_for_user(
+    user_email: str = Query(..., title="User Email"),
+    db: Session = Depends(get_db)
+):
+    places = db.query(Place).filter(Place.authorEmail == user_email).all()
+    return places
