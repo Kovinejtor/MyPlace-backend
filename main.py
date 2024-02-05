@@ -9,6 +9,7 @@ from models import BookCreate, BookResponse, registerCreate, registerResponse, p
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
+from passlib.hash import bcrypt
 
 app = FastAPI()
 
@@ -43,19 +44,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/register/", response_model=registerResponse)
+@app.post("/register/", response_model=dict)
 async def create_user(register: registerCreate, db: Session = Depends(get_db)):
-    db_register = Register(**register.dict())
+    # Hash the password before storing it
+    hashed_password = bcrypt.hash(register.password)
+
+    db_register = Register(
+        email=register.email,
+        password=hashed_password,
+        gender=register.gender,
+        firstName=register.firstName,
+        lastName=register.lastName,
+        country=register.country,
+        phoneNumber=register.phoneNumber
+    )
+
     db.add(db_register)
     db.commit()
     db.refresh(db_register)
-    return db_register
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(data={"sub": register.email}, expires_delta=access_token_expires)
+
+    return {"access_token": access_token, "token_type": "bearer"}  #"user": db_register, 
 
 @app.post("/login/")
 async def login(email: str, password: str, db: Session = Depends(get_db)):
-    user = db.query(Register).filter(Register.email == email, Register.password == password).first()
-    if user:
-        # Create an access token with user's email
+    user = db.query(Register).filter(Register.email == email).first()
+    if user and bcrypt.verify(password, user.password):
+        # Passwords match, create an access token
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(data={"sub": email}, expires_delta=access_token_expires)
         return {"access_token": access_token, "token_type": "bearer"}

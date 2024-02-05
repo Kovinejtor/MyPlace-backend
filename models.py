@@ -16,6 +16,7 @@ class BookResponse(BaseModel):
 class registerCreate(BaseModel):
     email: str
     password: str
+    gender: str
     firstName: str
     lastName: str
     country: str
@@ -25,6 +26,7 @@ class registerResponse(BaseModel):
     id: int
     email: str
     password: str
+    gender: str
     firstName: str
     lastName: str
     country: str

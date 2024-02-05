@@ -2,7 +2,6 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-
 from dotenv import load_dotenv
 import os
 
@@ -29,6 +28,7 @@ class Register(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String)
     password = Column(String)
+    gender = Column(String)
     firstName = Column(String)
     lastName = Column(String)
     country = Column(String)
