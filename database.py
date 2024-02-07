@@ -50,7 +50,6 @@ class Place(Base):
     animals = Column(String)
     parking = Column(String)
     minNight = Column(Integer)
-    price = Column(String)
     description = Column(String)
     folder = Column(String)
     dates = Column(String)

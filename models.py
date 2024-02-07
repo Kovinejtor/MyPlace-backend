@@ -45,7 +45,6 @@ class placeCreate(BaseModel):
     animals: str
     parking: str
     minNight: int
-    price: str
     description: str
     folder: str
     dates: str
@@ -65,7 +64,6 @@ class placeResponse(BaseModel):
     animals: str
     parking: str
     minNight: int
-    price: str
     description: str
     folder: str
     dates: str

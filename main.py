@@ -151,3 +151,23 @@ async def get_places_for_user(
 ):
     places = db.query(Place).filter(Place.authorEmail == user_email).all()
     return places
+
+@app.get("/places/{place_id}", response_model=placeResponse)
+async def get_place(place_id: int, db: Session = Depends(get_db)):
+    place = db.query(Place).filter(Place.id == place_id).first()
+    if place:
+        return place
+    else:
+        raise HTTPException(status_code=404, detail="Place not found")
+
+@app.put("/places/{place_id}", response_model=placeResponse)
+async def update_place(place_id: int, place_data: placeCreate, db: Session = Depends(get_db)):
+    place = db.query(Place).filter(Place.id == place_id).first()
+    if place:
+        for key, value in place_data.dict().items():
+            setattr(place, key, value)
+        db.commit()
+        db.refresh(place)
+        return place
+    else:
+        raise HTTPException(status_code=404, detail="Place not found")
