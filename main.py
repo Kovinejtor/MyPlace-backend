@@ -4,19 +4,26 @@ from sqlalchemy.orm import Session
 from typing import List
 from sqlalchemy import func
 
-from database import get_db, Register, Book, Place
-from models import BookCreate, BookResponse, registerCreate, registerResponse, placeCreate, placeResponse
+from database import get_db, Register, Place
+from models import registerCreate, registerResponse, placeCreate, placeResponse
 
 from jose import JWTError, jwt
+import uuid
+from dotenv import load_dotenv
+import os
+
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 from passlib.hash import bcrypt
+#from .email import send_password_reset_email
 
 app = FastAPI()
 
-SECRET_KEY = "your-secret-key"  # Change this to a secure key
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+load_dotenv()
+
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALGORITHM = os.getenv('ALGORITHM')
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES'))
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -79,6 +86,36 @@ async def login(email: str, password: str, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
+''''
+@app.post("/reset-password/")
+async def reset_password(email: str, db: Session = Depends(get_db)):
+    user = db.query(Register).filter(Register.email == email).first()
+    if user:
+        
+        reset_token = str(uuid.uuid4())
+        user.reset_token = reset_token
+        db.commit()
+        send_password_reset_email(email, reset_token)
+
+        return {"message": "Password reset email sent"}
+    else:
+        raise HTTPException(status_code=404, detail="User not found")
+
+@app.post("/reset-password/confirm/")
+async def reset_password_confirm(reset_token: str, new_password: str, db: Session = Depends(get_db)):
+    user = db.query(Register).filter(Register.reset_token == reset_token).first()
+    if user:
+        # Update user's password and clear the reset token
+        hashed_password = bcrypt.hash(new_password)
+        user.password = hashed_password
+        user.reset_token = None
+        db.commit()
+        return {"message": "Password reset successfully"}
+    else:
+        raise HTTPException(status_code=404, detail="Invalid or expired reset token")
+'''
+
+
 def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=401,
@@ -106,15 +143,6 @@ async def create_place(place: placeCreate, db: Session = Depends(get_db)):
     db.refresh(db_place)
     return db_place
     
-
-@app.post("/books/", response_model=BookResponse)
-async def create_book(book: BookCreate, db: Session = Depends(get_db)):
-    db_book = Book(**book.dict())
-    db.add(db_book)
-    db.commit()
-    db.refresh(db_book)
-    return db_book
-
 
 @app.get("/user-info/{email}", response_model=registerResponse)
 async def get_user_info(email: str, db: Session = Depends(get_db)):

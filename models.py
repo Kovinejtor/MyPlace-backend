@@ -1,17 +1,6 @@
 from pydantic import BaseModel
 from typing import List
 
-class BookCreate(BaseModel):
-    name: str
-    author: str
-    page_number: int
-
-class BookResponse(BaseModel):
-    id: int
-    name: str
-    author: str
-    page_number: int
-
 
 class registerCreate(BaseModel):
     email: str

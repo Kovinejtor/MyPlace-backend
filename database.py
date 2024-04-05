@@ -14,14 +14,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-class Book(Base):
-    __tablename__ = "book"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    author = Column(String)
-    page_number = Column(Integer)
-
 class Register(Base):
     __tablename__ = "register"
 
