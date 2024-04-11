@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
 from sqlalchemy import func
-
+from typing import Optional
 from database import get_db, Register, Place
 from models import registerCreate, registerResponse, placeCreate, placeResponse
 
@@ -174,10 +174,13 @@ async def count_places(user_email: str, db: Session = Depends(get_db)):
 
 @app.get("/places/", response_model=List[placeResponse])
 async def get_places_for_user(
-    user_email: str = Query(..., title="User Email"),
+    user_email: Optional[str] = Query(None, title="User Email"),
     db: Session = Depends(get_db)
 ):
-    places = db.query(Place).filter(Place.authorEmail == user_email).all()
+    if user_email:
+        places = db.query(Place).filter(Place.authorEmail == user_email).all()
+    else:
+        places = db.query(Place).all()
     return places
 
 @app.get("/places/{place_id}", response_model=placeResponse)
