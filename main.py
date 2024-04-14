@@ -202,3 +202,39 @@ async def update_place(place_id: int, place_data: placeCreate, db: Session = Dep
         return place
     else:
         raise HTTPException(status_code=404, detail="Place not found")
+    
+@app.put("/updateReservation/{place_id}", response_model=placeResponse)
+async def update_reservation(place_id: int, reservation: str = Query(...), db: Session = Depends(get_db)):
+    # Find the place with the given ID
+    db_place = db.query(Place).filter(Place.id == place_id).first()
+    if db_place is None:
+        raise HTTPException(status_code=404, detail="Place not found")
+    
+    # Update the reservation column
+    db_place.reservation = reservation
+    db.commit()
+    db.refresh(db_place)
+    
+    return db_place
+
+@app.delete("/deletePlace/{place_id}")
+async def delete_place(place_id: int, db: Session = Depends(get_db)):
+    # Find the place with the given ID
+    db_place = db.query(Place).filter(Place.id == place_id).first()
+    if db_place is None:
+        raise HTTPException(status_code=404, detail="Place not found")
+    
+    # Delete the place
+    db.delete(db_place)
+    db.commit()
+    
+    return {"message": "Place deleted successfully"}
+
+
+@app.get("/places/reserved/", response_model=List[placeResponse])
+async def get_reserved_places_for_user(
+    user_email: str,
+    db: Session = Depends(get_db)
+):
+    places = db.query(Place).filter(Place.reservation.like(f'%{user_email}%')).all()
+    return places

@@ -38,6 +38,7 @@ class placeCreate(BaseModel):
     folder: str
     dates: str
     authorEmail: str
+    reservation: str
 
 class placeResponse(BaseModel):
     id: int
@@ -57,3 +58,4 @@ class placeResponse(BaseModel):
     folder: str
     dates: str
     authorEmail: str
+    reservation: str

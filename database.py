@@ -46,6 +46,7 @@ class Place(Base):
     folder = Column(String)
     dates = Column(String)
     authorEmail = Column(String)
+    reservation = Column(String)
 
 Base.metadata.create_all(bind=engine)
 
