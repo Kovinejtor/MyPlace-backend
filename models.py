@@ -39,6 +39,7 @@ class placeCreate(BaseModel):
     dates: str
     authorEmail: str
     reservation: str
+    review: str
 
 class placeResponse(BaseModel):
     id: int
@@ -59,3 +60,4 @@ class placeResponse(BaseModel):
     dates: str
     authorEmail: str
     reservation: str
+    review: str

@@ -47,6 +47,7 @@ class Place(Base):
     dates = Column(String)
     authorEmail = Column(String)
     reservation = Column(String)
+    review = Column(String)
 
 Base.metadata.create_all(bind=engine)
 

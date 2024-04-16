@@ -217,6 +217,20 @@ async def update_reservation(place_id: int, reservation: str = Query(...), db: S
     
     return db_place
 
+@app.put("/updateReview/{place_id}", response_model=placeResponse)
+async def update_review(place_id: int, review: str = Query(...), db: Session = Depends(get_db)):
+    # Find the place with the given ID
+    db_place = db.query(Place).filter(Place.id == place_id).first()
+    if db_place is None:
+        raise HTTPException(status_code=404, detail="Place not found")
+    
+    # Update the review column
+    db_place.review = review
+    db.commit()
+    db.refresh(db_place)
+    
+    return db_place
+
 @app.delete("/deletePlace/{place_id}")
 async def delete_place(place_id: int, db: Session = Depends(get_db)):
     # Find the place with the given ID
