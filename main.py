@@ -58,6 +58,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+async def read_root():
+    return {"message": "Hello, world!"}
+
 @app.post("/register/", response_model=dict)
 async def create_user(register: registerCreate, db: Session = Depends(get_db)):
     hashed_password = bcrypt.hash(register.password)
