@@ -7,7 +7,7 @@ import os
 
 load_dotenv()
 
-DATABASE_URI = os.getenv("DATABASE_URI")
+DATABASE_URI = os.getenv("DATABASE_URI") #change this based on if its deplyoed or if the work is localy done
 
 engine = create_engine(DATABASE_URI)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

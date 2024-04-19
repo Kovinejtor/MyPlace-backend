@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 from passlib.hash import bcrypt
 #from .email import send_password_reset_email
-#DATABASE_URI = "postgresql://postgres:tajnalozinka@localhost/MyPlace"
+
 
 
 app = FastAPI()
@@ -41,13 +41,14 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
 
 origins = [
     "https://myplacewa.netlify.app",
-]
-
-'''
     "http://localhost",
     "http://localhost:5173", 
     "http://127.0.0.1",
     "http://127.0.0.1:5173",
+]
+
+'''
+    
 '''
 
 app.add_middleware(
