@@ -8,15 +8,12 @@ from database import get_db, Register, Place
 from models import registerCreate, registerResponse, placeCreate, placeResponse
 
 from jose import JWTError, jwt
-import uuid
 from dotenv import load_dotenv
 import os
 
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 from passlib.hash import bcrypt
-#from .email import send_password_reset_email
-
 
 
 app = FastAPI()
@@ -47,9 +44,6 @@ origins = [
     "http://127.0.0.1:5173",
 ]
 
-'''
-    
-'''
 
 app.add_middleware(
     CORSMiddleware,
@@ -100,35 +94,6 @@ async def login(email: str, password: str, db: Session = Depends(get_db)):
         return {"access_token": access_token, "token_type": "bearer"}
     else:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-
-''''
-@app.post("/reset-password/")
-async def reset_password(email: str, db: Session = Depends(get_db)):
-    user = db.query(Register).filter(Register.email == email).first()
-    if user:
-        
-        reset_token = str(uuid.uuid4())
-        user.reset_token = reset_token
-        db.commit()
-        send_password_reset_email(email, reset_token)
-
-        return {"message": "Password reset email sent"}
-    else:
-        raise HTTPException(status_code=404, detail="User not found")
-
-@app.post("/reset-password/confirm/")
-async def reset_password_confirm(reset_token: str, new_password: str, db: Session = Depends(get_db)):
-    user = db.query(Register).filter(Register.reset_token == reset_token).first()
-    if user:
-        # Update user's password and clear the reset token
-        hashed_password = bcrypt.hash(new_password)
-        user.password = hashed_password
-        user.reset_token = None
-        db.commit()
-        return {"message": "Password reset successfully"}
-    else:
-        raise HTTPException(status_code=404, detail="Invalid or expired reset token")
-'''
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
