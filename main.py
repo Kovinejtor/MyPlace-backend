@@ -40,12 +40,15 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 origins = [
+    "https://myplacewa.netlify.app",
+]
+
+'''
     "http://localhost",
     "http://localhost:5173", 
     "http://127.0.0.1",
     "http://127.0.0.1:5173",
-    "https://myplacewa.netlify.app",
-]
+'''
 
 app.add_middleware(
     CORSMiddleware,
